@@ -1,55 +1,72 @@
-var path = require('path');
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-// Phaser webpack config
-var phaserModule = path.join(__dirname, '/node_modules/phaser/');
-var phaser = path.join(phaserModule, 'build/custom/phaser-split.js');
-var pixi = path.join(phaserModule, 'build/custom/pixi.js');
-var p2 = path.join(phaserModule, 'build/custom/p2.js');
+/*
+ * We've enabled UglifyJSPlugin for you! This minifies your app
+ * in order to load faster and run less javascript.
+ *
+ * https://github.com/webpack-contrib/uglifyjs-webpack-plugin
+ *
+ */
+
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+
+/*
+ * SplitChunksPlugin is enabled by default and replaced
+ * deprecated CommonsChunkPlugin. It automatically identifies modules which
+ * should be splitted of chunk by heuristics using module duplication count and
+ * module category (i. e. node_modules). And splits the chunks…
+ *
+ * It is safe to remove "splitChunks" from the generated configuration
+ * and was added as an educational example.
+ *
+ * https://webpack.js.org/plugins/split-chunks-plugin/
+ *
+ */
 
 module.exports = {
   entry: './src/index.ts',
+  devtool: 'inline-source-map',
+  devServer: {
+    contentBase: './dist',
+    stats: {
+      modules: false,
+    },
+  },
   output: {
-    pathInfo: true,
-    filename: '[name].bundle.js',
-    path: path.resolve('./dist'),
-    publicPath: '/'
+    filename: '[name].[hash].js',
+    path: path.resolve(__dirname, 'dist'),
   },
-  resolve: {
-    extensions: ['', '.js', '.ts'],
+
+  module: {
+    rules: [
+      // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
+      {
+        test: /\.tsx?$/,
+        loader: 'ts-loader',
+      },
+    ],
   },
+
   plugins: [
     new CopyWebpackPlugin([
       {
         from: './src/assets',
-        to:'./assets'
-      }
+        to: './assets',
+      },
     ]),
     new HtmlWebpackPlugin({
       template: './index.html',
       inject: 'body',
     }),
-    new webpack.NoErrorsPlugin(),
   ],
-  module: {
-    loaders: [
-      { test: /pixi\.js/, loader: 'expose?PIXI' },
-      { test: /phaser-split\.js$/, loader: 'expose?Phaser' },
-      { test: /p2\.js/, loader: 'expose?p2' },
-      { test: /\.ts?$/, loader: 'ts', exclude: '/node_modules/' }
-    ]
-  },
+  mode: 'development',
   node: {
-    fs: 'empty'
+    fs: 'empty',
   },
-  resolve: {
-    alias: {
-      'phaser': phaser,
-      'pixi': pixi,
-      'p2': p2,
-    }
+  stats: {
+    modules: false,
   },
-  devtool: 'source-map'
-}
+};

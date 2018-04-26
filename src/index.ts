@@ -1,11 +1,9 @@
-import 'rxjs/Rx';
+// import 'rxjs/Rx';
 
 class App {
-
-  constructor() {
-  }
+  constructor() {}
 }
 
 window.onload = () => {
-  const game = new App();
+  const app = new App();
 };
