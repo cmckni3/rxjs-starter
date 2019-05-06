@@ -1,5 +1,3 @@
-// import 'rxjs/Rx';
-
 class App {
   constructor() {}
 }
