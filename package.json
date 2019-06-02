@@ -5,7 +5,6 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "webpack-dev-server -d --inline --hot --progress --port 9000",
-    "build": "webpack --progress",
     "build": "rimraf ./dist && webpack -p"
   },
   "dependencies": {
